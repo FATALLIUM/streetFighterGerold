@@ -1,0 +1,12 @@
+.statsBox {
+    background-color: rgb(57, 57, 209);
+}
+
+.scroll {
+    background-color: #9e02a3;
+    width: 200;
+    height: 110px;
+    overflow-y: scroll;
+    text-align: justify;
+    padding: 20px;
+  }
