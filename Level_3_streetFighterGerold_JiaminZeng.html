@@ -2,15 +2,19 @@
 <html>
     <head>
     <title>STREET FIGHTER: THE RISE OF GEROLD</title>
-    <style src = "css sheet.css"></style>
+    <link rel = "stylesheet" href = "css sheet.css" />
     <body onload = "initialize();">
-        <div class = "scroll", id = "outputBox">EMPTY.</div>
-        <p id = "playerStatBox", class = "statsBox">PLAYER STATS:</p>
-        <p id = "enemyStatBox", class = "statsBox">ENEMY STATS:</p>
+        <div id = "playerStatBox", class = "statsBox">PLAYER STATS:</div>
+        <div id = "enemyStatBox", class = "statsBox" style = "right: 0">ENEMY STATS:</div>
+        <img id = "pImage", src = "gerold_0.jpg">
+        <img id = "eImage", src = "placeholder.jpg">
         <hr />
         <div></div>
         <button id = "atkButton">ATTACK!</button>
         <button id = "defButton">DEFEND!</button>
+        <div class = "scroll", id = "outputBox">Attack or defend?</div>
+        <hr />
+        <button id = "resetButton">RESET GAME!</button>
         <script src = "utilities.js"></script>
     </head>
     </body>

@@ -1,5 +1,6 @@
 const atkBtn = document.getElementById("atkButton");
 const defBtn = document.getElementById("defButton");
+const resetBtn = document.getElementById("resetButton");
 
 const outputLogBox = document.getElementById("outputBox");
 const pStatsBox = document.getElementById("playerStatBox");
@@ -13,6 +14,8 @@ let pStatsLog = "";
 let eStatsLog = "";
 
 let gameOver = false;  
+
+let pOriginalVit, eOriginalVit = 0;
 
 class Fighter {
     constructor (str, dex, spd, vit) {
@@ -37,10 +40,10 @@ class Fighter {
 
     setDef = (isDefending) => {
         if (isDefending) {
-            this.defOut = Math.trunc(this.spd + this.dex);
+            this.defOut = this.spd + this.dex;
         }
         else {
-            this.defOut = Math.trunc(this.spd + getRnd(1, 6));
+            this.defOut = this.spd + getRnd(1, 6);
         }
     }
 
@@ -87,24 +90,30 @@ class Fighter {
     }
 }
 
-const f1 = new Fighter(6, 6, 6, 30);
-const player = new Fighter(6, 6, 6, 30);
+let f1 = new Fighter(6, 6, 6, 30);
+let player = new Fighter(6, 6, 6, 30);
 
 function initialize() {
     setUpFighters(f1);
     setUpFighters(player);
+
+    pOriginalVit = player.vit;
+    eOriginalVit = f1.vit;
 
     atkBtn.addEventListener("click", function () { playerAction(0); });
     atkBtn.src = "atkBtn.jpg";
 
     defBtn.addEventListener("click", function () { playerAction(1); });
     defBtn.src = "defBtn.jpg";
+
+    resetBtn.addEventListener("click", reset);
 }
 
 const setAndCheckFinish = () => {
     if (player.vit >= f1.vit * 2 || f1.vit < 0) {
         player.finish = true;
-        atkBtn.src = "finishBtn.jpg";
+        atkBtn.style.backgroundColor = "green";
+        atkBtn.innerHTML = "FINISH THEM!";
     }
     else if (f1.vit >= player.vit * 2 || player.vit < 0) {
         f1.finish = true;
@@ -112,13 +121,16 @@ const setAndCheckFinish = () => {
     else {
         player.finish = false;
         f1.finish = false;
-        atkBtn.src = "atkBtn.jpg";
+        atkBtn.style.backgroundColor = "red";
+        atkBtn.innerHTML = "ATTACK!";
     }
 }
 
 const playerAction = (action) => {
-    pStatsLog = "\nStr: " + player.str + "\nDex:" + player.dex + "\nSpd:" + player.spd + "\nVit:" + player.vit;
-    eStatsLog = "Fstr: " + f1.str + "\nFDex:" + f1.dex + "\nFSpd:" + f1.spd + "\nFVit:" + f1.vit;
+    pStatsLog = "Str: " + player.str + "<br/ >Dex:" + player.dex + "<br/ >Spd:"
+    + player.spd + "<br/ >Vit:" + pOriginalVit + " --> " + player.vit;
+    eStatsLog = "Str: " + f1.str + "<br/ >Dex:" + f1.dex + "<br/ >Spd:"
+    + f1.spd + "<br/ >Vit:" + eOriginalVit + " ---> " + f1.vit;
     if (!gameOver) {
         action === 0 ? player.setAtk() : player.setDef(true);
         // if player has finishing move
@@ -141,22 +153,22 @@ const playerAction = (action) => {
             let enemyMove = enemyTurn();
             // enemy attacks
             if (enemyMove === 0) {
-                outputLog += "The opponent attacks for " + f1.atkOut + " damage!";
+                outputLog += "<br/ >The opponent attacks for " + f1.atkOut + " damage!";
                 // player defends but no dmg taken.
                 if (action === 1) {
                     if (player.defOut > f1.atkOut) {
-                        outputLog += "Gerold defends and takes no damage!"
+                        outputLog += "<br/ >Gerold defends and takes no damage!"
                         player.setStats("vit", 1, getRnd(1, 6));
                     }
                     // player defends and takes damage
                     else {
-                        outputLog += "Gerold defends and takes " + f1.atkOut - player.defOut + " damage!";
+                        outputLog += "<br/ >Gerold defends and takes " + f1.atkOut - player.defOut + " damage!";
                         player.setStats("vit", -1, f1.atkOut - player.defOut);  
                   }
                 }
                 // player attacks
                 else {
-                    outputLog += "Gerold attacks for " + player.atkOut + " damage!";
+                    outputLog += "<br/ >Gerold attacks for " + player.atkOut + " damage!";
                     if (f1.atkOut > player.defOut) {
                         player.setStats("vit", -1, f1.atkOut - player.defOut);
                     }
@@ -169,18 +181,18 @@ const playerAction = (action) => {
             else if (enemyMove === 1) {
                 // if they both defend
                 if (action === 1) {
-                    outputLog += "Both Gerold and the opponent defends and gained back HP!";
+                    outputLog += "<br/ >Both Gerold and the opponent defends and gained back HP!";
                     f1.setStats("vit", 1, getRnd(1, 6));
                     player.setStats("vit", 1, getRnd(1, 6));
                 }
                 // player attacks
                 else {
                     if (f1.defOut > player.atkOut) {
-                        outputLog += "The opponent defends and takes no damage!";
+                        outputLog += "<br/ >The opponent defends and takes no damage!";
                         f1.setStats("vit", 1, getRnd(1, 6));
                     }
                     else {
-                        outputLog += "The opponent defends and takes " + player.atkOut - f1.defOut + " damage!";
+                        outputLog += "<br/ >The opponent defends and takes " + player.atkOut - f1.defOut + " damage!";
                         f1.setStats("vit", -1, player.atkOut - f1.defOut);
                     }
                 }
@@ -266,4 +278,23 @@ const ending = (fighter) => {
         default:
             break;        
     }
+}
+
+const reset = () => {
+    f1.resetOutput();
+    player.resetOutput();
+
+    f1 = new Fighter(6, 6, 6, 30);
+    player = new Fighter(6, 6, 6, 30);
+
+    atkBtn.style.backgroundColor = "red";
+    atkBtn.innerHTML = "ATTACK!";
+
+    setUpFighters(f1);
+    setUpFighters(player);
+
+    gameOver = false;
+
+    outputLog = "Game reset. Choose a move.";
+    display();
 }
