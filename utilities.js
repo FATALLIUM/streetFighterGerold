@@ -201,7 +201,7 @@ const playerAction = (action) => {
                     if (f1.atkOut > player.defOut) {
                         player.setStats("vit", -1, f1.atkOut - player.defOut);
                     }
-                    if (player.atkOut > f1.atkOut) {
+                    if (player.atkOut > f1.defOut) {
                         f1.setStats("vit", -1, player.atkOut - f1.defOut);
                     }
                 }
