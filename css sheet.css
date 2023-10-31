@@ -1,12 +1,12 @@
 body {
     background-color: #000000;
-    color: white;
 }
 
 h1 {
     text-align: center;
     font-family: 'Courier New', Courier, monospace;
     font-size: 29pt;
+    color: aliceblue;
 }
 
 button {
@@ -29,7 +29,7 @@ button {
 .scroll {
     background-color: #000000;
     color: aliceblue;
-    width: 300px;
+    width: 400px;
     height: 210px;
     border-style: solid groove;
     overflow-y: scroll;

@@ -1,24 +1,38 @@
+// Set up button objects.
 const atkBtn = document.getElementById("atkButton");
 const defBtn = document.getElementById("defButton");
 const resetBtn = document.getElementById("resetButton");
 
+// Set up heading (fight name).
 const fightNameHeading = document.getElementById("fightName");
 
+// Set up output log box as well as player and enemy stats.
 const outputLogBox = document.getElementById("outputBox");
 const pStatsBox = document.getElementById("playerStatBox");
 const eStatsBox = document.getElementById("enemyStatBox");
 
+// Set up player and enemy sprite image objects.
 const pSprite = document.getElementById("pImage");
 const eSprite = document.getElementById("eImage");
 
+// Initialize innerHTML of output log + player and enemy stats.
 let outputLog = "";
 let pStatsLog = "";
 let eStatsLog = "";
 
+// Misc.
 let gameOver = false;  
 
 let pOriginalVit, eOriginalVit = 0;
 
+/* Fighter class with instance variables str, dex, spd, vit, and name.
+
+   The first four stats will be calculated into the fight with several methods.
+   - name is used to change sprites.
+   - finish is a boolean to see whether the Fighter is able to use their Finishing Move.
+   - atkOut deals damage.
+   - defOut is boosted defense from defending.
+*/
 class Fighter {
     constructor (str, dex, spd, vit, name) {
         this.str = str;
@@ -33,14 +47,24 @@ class Fighter {
         this.finish = false;
     }
 
+    /* This method sets the Fighter's atkOut into its calculated value.
+       Called when Fighter attacks.
+    */
     setAtk() {
         this.atkOut = Math.trunc((this.str + this.spd + this.dex) / getRnd(1, 3));
     }
 
+    /* This method sets the Fighter's atkOut into its calculated value (Finishing Move).
+       Called when Fighter can FINISH THEM.
+    */
     setFinishing() {
         this.atkOut = Math.trunc((this.str + this.spd) / getRnd(1, 3));
     }
 
+    /* @param isDefending -> boolean value to see if the Fighter is defending or not.
+       This method sets the Fighter's defOut into its calculated value depending on isDefending.
+       Called when the Fighter is defending.
+    */
     setDef(isDefending) {
         if (isDefending) {
             this.defOut = this.spd + this.dex;
@@ -50,6 +74,12 @@ class Fighter {
         }
     }
 
+    /* @param stat -> String value that specifies which stat to change.
+       @param change -> Integer value that specifies if the stat change will be an increment or decrement.
+       @param amt -> Integer value that specifies the amount the stat will change.
+       This method changes the Fighter's stats. Only one stat can be changed per call.
+       Called when stats need changing, e.g. start of the game/reset.
+    */
     setStats(stat, change, amt){
         switch (stat) {
             case "vit":
@@ -87,12 +117,18 @@ class Fighter {
         }
     }
 
+    /* This method resets the Fighter's calculated atkOut and defOut.
+       Called at the end of a turn and game reset.
+    */
     resetOutput() {
         this.atkOut = 0;
         this.defOut = 0;
     }
 }
 
+/* This function returns a String value depending on a random number.
+   Called when creating a new Fighter (opponent) object. 
+*/
 const rndName = () => {
     let rnd = getRnd(0, 3);
     switch (rnd) {
@@ -109,21 +145,30 @@ const rndName = () => {
     }
 }
 
+// Create two new Fighter objects.
 let f1 = new Fighter(6, 6, 6, 30, rndName());
 let player = new Fighter(6, 6, 6, 30, "Gerold");
 
+/* This function assigns values to initialized variables. Sets up the game.
+   Called when the body HTML loads.
+*/
 function initialize() {
+    // Change both Fighter stats to random stats.
     setUpFighters(f1);
     setUpFighters(player);
 
+    // Set each Fighter's sprite.
     setImage(f1.name, 0);
     setImage(player.name, 0);
 
+    // Set heading.
     fightNameHeading.innerHTML = player.name + " VS " + f1.name;
 
+    // Keep original HP values.
     pOriginalVit = player.vit;
     eOriginalVit = f1.vit;
 
+    // Add event listeners to all buttons.
     atkBtn.addEventListener("click", function () { playerAction(0); });
     atkBtn.src = "atkBtn.jpg";
 
@@ -133,6 +178,11 @@ function initialize() {
     resetBtn.addEventListener("click", reset);
 }
 
+/* This function checks to see if either Fighter can do a Finishing Move.
+   If neither Fighter can, set both finish values to false.
+   Otherwise, change button displays.
+   Called at the end of each turn.
+*/
 const setAndCheckFinish = () => {
     if (player.vit >= f1.vit * 2 || f1.vit < 0) {
         player.finish = true;
@@ -150,7 +200,22 @@ const setAndCheckFinish = () => {
     }
 }
 
+/* @param action -> Passed when the player clicks to attack or defend.
+   => 0 to attack, 1 to defend.
+
+   This function is when most of my hair fell out. It updates the innerHTML for both
+   enemy and player stats. First, it checks to see if global var gameOver is false so the game
+   can keep going. It calls the player's setAtk() or setDef() depending on what action is.
+
+   Then, it checks if the player can FINISH THEM [and] if they chose to use the FINISH THEM (attack button).
+   If not, the opponent automatically FINISHES the player if they are able to.
+   If neither Fighter can FINISH EACH OTHER, store the enemy's move into a temporary variable.
+
+   Some awesome stuff is done (attacking, defending, etc) and the turn ends.
+   Calculated attack and defense is reset, setAndCheck() is called, and then update the visuals. 
+*/
 const playerAction = (action) => {
+    // Update stats.
     pStatsLog = "Str: " + player.str + "<br/ >Dex: " + player.dex + "<br/ >Spd: "
     + player.spd + "<br/ >Vit:" + pOriginalVit + " --> " + player.vit;
 
@@ -167,6 +232,7 @@ const playerAction = (action) => {
                 ending("player");
             }
         }
+        // if enemy can finish
         else if (f1.finish) {
             f1.setFinishing();
             if (f1.atkOut > 1) {
@@ -174,14 +240,16 @@ const playerAction = (action) => {
                 ending("f1");
             }
         }
+        // normal turn
         else {
             // enemy move
             let enemyMove = enemyTurn();
             // enemy attacks
             if (enemyMove === 0) {
+                // changing sprite depending on Fighter state
                 setImage(f1.name, 1);
                 outputLog += "<br/ >The opponent attacks for " + f1.atkOut + " damage!";
-                // player defends but no dmg taken.
+                // player defends but no dmg taken
                 if (action === 1) {
                     setImage(player.name, 2);
                     if (player.defOut > f1.atkOut) {
@@ -198,9 +266,11 @@ const playerAction = (action) => {
                 else {
                     setImage(player.name, 1);
                     outputLog += "<br/ >Gerold attacks for " + player.atkOut + " damage!";
+                    // take damage
                     if (f1.atkOut > player.defOut) {
                         player.setStats("vit", -1, f1.atkOut - player.defOut);
                     }
+                    // take damage
                     if (player.atkOut > f1.defOut) {
                         f1.setStats("vit", -1, player.atkOut - f1.defOut);
                     }
@@ -238,17 +308,26 @@ const playerAction = (action) => {
     }
 }
 
+/* This function updates the innerHTML of both stat boxes and the output log box.
+   Called at the end of each turn.
+*/
 const display = () => {
     outputLogBox.innerHTML = outputLog;
     pStatsBox.innerHTML = pStatsLog;
     eStatsBox.innerHTML = eStatsLog;
 }
 
+/* @param fighter -> a Fighter object.
+   This function alters the Fighter's stats accordingly.
+   Called at the beginning of each game.
+*/
 const setUpFighters = (fighter) => {
     let stat = "";
     let rnd = 0;
     for (i = 0; i <= 3; i++) {
+        // random stat to change
         rnd = getRnd(0,2);
+        // change stat (increment) x2
         if (i < 2) {
             switch (rnd) {
                 case 0:
@@ -261,9 +340,11 @@ const setUpFighters = (fighter) => {
                     stat = "spd";
                     break;            
             }
+            // change stat
             fighter.setStats(stat, 1, getRnd(0,1));
         }
         else {
+            // random stat to change
             switch (rnd) {
                 case 0:
                     stat = "str";
@@ -275,13 +356,24 @@ const setUpFighters = (fighter) => {
                     stat = "spd";
                     break;
             }
+            // change stat (decrement) x2
             fighter.setStats(stat, 0, getRnd(0,1));
         }
     }
     rnd = getRnd(0, 6);
+    // Fighter gets vitality buff.
     fighter.setStats("vit", 1, rnd);
 }
 
+/* @param name -> String value. Should be a Fighter's name. Specifies which Fighter's sprite to change.
+   @param state -> Specifies what state the Fighter is in. These states are:
+   - 0: default sprite.
+   - 1: attack sprite.
+   - 2: defend sprite.
+   - 3: death sprite.
+   This function changes pSprite and eSprite src images accordingly.
+   Called when either Fighter does something.
+*/
 const setImage = (name, state) => {
     switch (name) {
         case "Gerold":
@@ -379,10 +471,19 @@ const setImage = (name, state) => {
     }
 }
 
+/* @param min -> minimum number.
+   @param max -> maximum number.
+   This function returns a number between min and max (both inclusive).
+   Called... all the time, really.
+*/
 function getRnd(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
+/* This function returns a value that specifies if the enemy defended or attacked.
+   Their move is equivalent to flipping a coin.
+   Called in playerAction().
+*/
 const enemyTurn = () => {
     let rnd = getRnd(0, 1);
     if (rnd === 0) {
@@ -396,6 +497,10 @@ const enemyTurn = () => {
     }
 }
 
+/* @param fighter -> Fighter object that won.
+   This function sets the loser and winner sprites + resets outlog text.
+   Called when a Fighter uses their Finishing Move.
+*/
 const ending = (fighter) => {
     switch (fighter) {
         case "player":
@@ -413,10 +518,14 @@ const ending = (fighter) => {
     }
 }
 
-const reset = () => {
-    f1.resetOutput();
-    player.resetOutput();
+/* This function resets the game.
+   New Fighter objects are created.
+   Button displays are reset to its default display.
+   Similar to intialize().
 
+   Called when the player clicks the reset button.
+*/
+const reset = () => {
     f1 = new Fighter(6, 6, 6, 30, rndName());
     player = new Fighter(6, 6, 6, 30, "Gerold");
 
@@ -428,6 +537,8 @@ const reset = () => {
 
     setImage(f1.name, 0);
     setImage(player.name, 0);
+
+    fightNameHeading.innerHTML = player.name + " VS " + f1.name;
 
     gameOver = false;
 
