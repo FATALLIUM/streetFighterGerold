@@ -4,10 +4,12 @@ const defBtn = document.getElementById("defButton");
 const resetBtn = document.getElementById("resetButton");
 
 // Set up heading (fight name).
-const fightNameHeading = document.getElementById("fightName");
+const fightNameHeading = document.querySelector("h1");
 
 // Set up output log box as well as player and enemy stats.
 const outputLogBox = document.getElementById("outputBox");
+const dialogueLogBox = document.getElementById("dialogueBox");
+
 const pStatsBox = document.getElementById("playerStatBox");
 const eStatsBox = document.getElementById("enemyStatBox");
 
@@ -17,6 +19,7 @@ const eSprite = document.getElementById("eImage");
 
 // Initialize innerHTML of output log + player and enemy stats.
 let outputLog = "";
+let dialogueLog = '';
 let pStatsLog = "";
 let eStatsLog = "";
 
@@ -308,11 +311,12 @@ const playerAction = (action) => {
     }
 }
 
-/* This function updates the innerHTML of both stat boxes and the output log box.
+/* This function updates the innerHTML of both stat boxes and the output log box + dialogue box.
    Called at the end of each turn.
 */
 const display = () => {
     outputLogBox.innerHTML = outputLog;
+    dialogueLogBox.innerHTML = dialogueLog;
     pStatsBox.innerHTML = pStatsLog;
     eStatsBox.innerHTML = eStatsLog;
 }
@@ -371,7 +375,7 @@ const setUpFighters = (fighter) => {
    - 1: attack sprite.
    - 2: defend sprite.
    - 3: death sprite.
-   This function changes pSprite and eSprite src images accordingly.
+   This function changes pSprite and eSprite src images accordingly. Also adds extra dialogue.
    Called when either Fighter does something.
 */
 const setImage = (name, state) => {
@@ -380,15 +384,19 @@ const setImage = (name, state) => {
             switch (state) {
                 case 0:
                     pSprite.src = "gerold_0.png";
+                    dialogueLog += '<br />Gerold: "Sparkly..."';
                     break;
                 case 1:
                     pSprite.src = "gerold_1.png";
+                    dialogueLog += '<br />Gerold: "get rekt"';
                     break;
                 case 2:
                     pSprite.src = "gerold_2.png";
+                    dialogueLog += '<br />Gerold: "Defend...!"';
                     break;
                 case 3:
                     pSprite.src = "gerold_3.png";
+                    dialogueLog += '<br /><br />Gerold: "Ouch."';
                     break;
                 default:
                     break;                
@@ -398,15 +406,19 @@ const setImage = (name, state) => {
             switch (state) {
                 case 0:
                     eSprite.src = "leer_0.png";
+                    dialogueLog += '<br />Leer: "Oh... hello..."';
                     break;
                 case 1:
                     eSprite.src = "leer_1.png";
+                    dialogueLog += '<br />Leer: "I don\'t wanna hurt you..."';
                     break;
                 case 2:
                     eSprite.src = "leer_2.png";
+                    dialogueLog += '<br />Leer: "That... that hurt...!"';
                     break;
                 case 3:
                     eSprite.src = "leer_3.png";
+                    dialogueLog += '<br /><br />Leer: "Oof..."';
                     break;
                 default:
                     break;                
@@ -416,15 +428,19 @@ const setImage = (name, state) => {
             switch (state) {
                 case 0:
                     eSprite.src = "allein_0.png";
+                    dialogueLog += '<br />Allein: "TEA-TIME, TEA-TIME!"';
                     break;
                 case 1:
                     eSprite.src = "allein_1.png";
+                    dialogueLog += '<br />Allein: "WOO!"';
                     break;
                 case 2:
                     eSprite.src = "allein_2.png";
+                    dialogueLog += '<br />Allein: "GRASS(!?)"';
                     break;
                 case 3:
                     eSprite.src = "allein_3.png";
+                    dialogueLog += '<br /><br />Allein: "BLOODY HELL, that was my best shirt!"';
                     break;
                 default:
                     break;                
@@ -434,15 +450,19 @@ const setImage = (name, state) => {
             switch (state) {
                 case 0:
                     eSprite.src = "chess_0.png";
+                    dialogueLog += '<br />Chess: "Who is this lost, sassy child?"';
                     break;
                 case 1:
                     eSprite.src = "chess_1.png";
+                    dialogueLog += '<br />Cheese: "I don\'t mind bullying children."';
                     break;
                 case 2:
                     eSprite.src = "chess_2.png";
+                    dialogueLog += '<br />Cheese: "Purple Shield!"';
                     break;
                 case 3:
                     eSprite.src = "chess_3.png";
+                    dialogueLog += '<br />Cheese: "Stupid kid."';
                     break;
                 default:
                     break;                
@@ -452,15 +472,19 @@ const setImage = (name, state) => {
             switch (state) {
                 case 0:
                     eSprite.src = "sirPurple_0.png";
+                    dialogueLog += '<br />Sir Purple: "Lay your eyes on the ONE AND ONLY, D@MMIT!"';
                     break;
                 case 1:
                     eSprite.src = "sirPurple_1.png";
+                    dialogueLog += '<br />Sir Purple: "Frick you, frick you, and ESPECIALLY YOU!"';
                     break;
                 case 2:
                     eSprite.src = "sirPurple_2.png";
+                    dialogueLog += '<br />Sir Purple: "Don\'t TOUCH-A ME!"';
                     break;
                 case 3:
                     eSprite.src = "sirPurple_3.png";
+                    dialogueLog += '<br /><br />Sir Purple: "yOU KILled ME!!!!"';
                     break;
                 default:
                     break;                
@@ -477,7 +501,7 @@ const setImage = (name, state) => {
    Called... all the time, really.
 */
 function getRnd(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) ) + min;
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 /* This function returns a value that specifies if the enemy defended or attacked.
@@ -506,12 +530,12 @@ const ending = (fighter) => {
         case "player":
             setImage(player.name, 1);
             setImage(f1.name, 3);
-            outputLog = "GEROLD WINS!!!!";
+            outputLog += "<br /><br />GEROLD WINS!!!!";
             break;
         case "f1":
             setImage(f1.name, 1);
             setImage(player.name, 3);
-            outputLog = "The opponent wins!!!";
+            outputLog += "<br /><br />The opponent wins!!!";
             break;
         default:
             break;        

@@ -35,8 +35,13 @@ button {
     overflow-y: scroll;
     font-size: 15pt;
     font-family: 'Courier New', Courier, monospace;
-    text-align: center;
+    text-align: justify;
     padding: 20px;
+}
+
+#dialogueBox {
+    float: right;
+    width: 410px;
 }
 
 #pImage {
