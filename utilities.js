@@ -219,10 +219,10 @@ const setAndCheckFinish = () => {
 */
 const playerAction = (action) => {
     // Update stats.
-    pStatsLog = "Str: " + player.str + "<br/ >Dex: " + player.dex + "<br/ >Spd: "
+    pStatsLog = "PLAYER STATS: <br/ ><br/ >Str: " + player.str + "<br/ >Dex: " + player.dex + "<br/ >Spd: "
     + player.spd + "<br/ >Vit:" + pOriginalVit + " --> " + player.vit;
 
-    eStatsLog = "Str: " + f1.str + "<br/ >Dex: " + f1.dex + "<br/ >Spd: "
+    eStatsLog = "ENEMY STATS: <br/ ><br/ >Str: " + f1.str + "<br/ >Dex: " + f1.dex + "<br/ >Spd: "
     + f1.spd + "<br/ >Vit: " + eOriginalVit + " ---> " + f1.vit;
 
     if (!gameOver) {

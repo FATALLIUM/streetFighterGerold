@@ -26,6 +26,10 @@ button {
     padding: 20px;
 }
 
+#playerStatBox {
+    background-color: red;
+}
+
 .scroll {
     background-color: #000000;
     color: aliceblue;
@@ -40,8 +44,9 @@ button {
 }
 
 #dialogueBox {
-    float: right;
+    left: 700px;
     width: 410px;
+    position: absolute;
 }
 
 #pImage {
