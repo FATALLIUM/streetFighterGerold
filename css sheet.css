@@ -17,9 +17,12 @@ button {
 }
 
 .statsBox {
+    display: grid;
+    grid-template-columns: repeat(5, 125px);
+    grid-gap: 30px;
     background-color: rgb(0, 0, 51);
     color: aliceblue;
-    width: 200px;
+    width: 800px;
     height: 110px;
     font-family: 'Courier New', Courier, monospace;
     border-style: solid groove;

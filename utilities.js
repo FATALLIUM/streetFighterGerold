@@ -6,12 +6,20 @@ const resetBtn = document.getElementById("resetButton");
 // Set up heading (fight name).
 const fightNameHeading = document.querySelector("h1");
 
-// Set up output log box as well as player and enemy stats.
+// Set up output log box as well as dialogue box.
 const outputLogBox = document.getElementById("outputBox");
 const dialogueLogBox = document.getElementById("dialogueBox");
 
-const pStatsBox = document.getElementById("playerStatBox");
-const eStatsBox = document.getElementById("enemyStatBox");
+// Player and enemy stats.
+const pStr0 = document.getElementById("pStr");
+const pDex0 = document.getElementById("pDex");
+const pSpd0 = document.getElementById("pSpd");
+const pVit0 = document.getElementById("pVit");
+
+const eStr0 = document.getElementById("eStr");
+const eDex0 = document.getElementById("eDex");
+const eSpd0 = document.getElementById("eSpd");
+const eVit0 = document.getElementById("eVit");
 
 // Set up player and enemy sprite image objects.
 const pSprite = document.getElementById("pImage");
@@ -20,8 +28,6 @@ const eSprite = document.getElementById("eImage");
 // Initialize innerHTML of output log + player and enemy stats.
 let outputLog = "";
 let dialogueLog = '';
-let pStatsLog = "";
-let eStatsLog = "";
 
 // Misc.
 let gameOver = false;  
@@ -218,13 +224,6 @@ const setAndCheckFinish = () => {
    Calculated attack and defense is reset, setAndCheck() is called, and then update the visuals. 
 */
 const playerAction = (action) => {
-    // Update stats.
-    pStatsLog = "PLAYER STATS: <br/ ><br/ >Str: " + player.str + "<br/ >Dex: " + player.dex + "<br/ >Spd: "
-    + player.spd + "<br/ >Vit:" + pOriginalVit + " --> " + player.vit;
-
-    eStatsLog = "ENEMY STATS: <br/ ><br/ >Str: " + f1.str + "<br/ >Dex: " + f1.dex + "<br/ >Spd: "
-    + f1.spd + "<br/ >Vit: " + eOriginalVit + " ---> " + f1.vit;
-
     if (!gameOver) {
         action === 0 ? player.setAtk() : player.setDef(true);
         // if player has finishing move
@@ -317,8 +316,16 @@ const playerAction = (action) => {
 const display = () => {
     outputLogBox.innerHTML = outputLog;
     dialogueLogBox.innerHTML = dialogueLog;
-    pStatsBox.innerHTML = pStatsLog;
-    eStatsBox.innerHTML = eStatsLog;
+
+    pStr0.textContent = "Str: " + player.str + " --> " + player.atkOut;
+    pDex0.textContent = "Dex" + player.dex + " --> " + player.dex;
+    pSpd0.textContent = "Spd" + player.spd + " --> " + player.spd;
+    pVit0.textContent = "Vit:" + pOriginalVit + " --> " + player.vit;
+
+    eStr0.textContent = "Str: " + f1.str + " --> " + f1.atkOut;
+    eDex0.textContent = "Dex" + f1.dex + " --> " + f1.dex;
+    eSpd0.textContent = "Spd" + f1.spd + " --> " + f1.spd;
+    eVit0.textContent = "Vit:" + eOriginalVit + " --> " + f1.vit;
 }
 
 /* @param fighter -> a Fighter object.
